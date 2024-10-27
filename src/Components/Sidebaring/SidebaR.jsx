@@ -1,44 +1,42 @@
-
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import css from "../Sidebaring/Children/Sidebar.module.css";
 import { ListOfBoardS } from "../Sidebaring/Children/ListOfBoardS";
 import { ReachHelPing } from "../Sidebaring/Children/ReachHelPing";
 import { LogingOut } from "../Sidebaring/Children/LogingOut";
 import { LogoSidebaR } from "../Sidebaring/Children/LogoSidebaR";
 import { CreateBoarD } from "../Sidebaring/Children/CreateBoarD";
-import {BoardModaL} from "../Sidebaring/Children/BoardModaL";
-import {HelpModaL} from "../Sidebaring/Children/HelpModaL";
-import { useState } from "react";
-
-
+import { BoardModaL } from "../Sidebaring/Children/BoardModaL";
+import { HelpModaL } from "../Sidebaring/Children/HelpModaL";
+import { getBoards } from "../../Redux/selectors";
 
 export const Sidebar = ({
   handleSidebarVisibility,
   sidebarVisibility,
-  handleSelectedBoard, 
+  handleSelectedBoard,
 }) => {
-  const [isboardmodalopen, setisboardmodalopen] = useState(false);
+  const [isBoardModalOpen, setIsBoardModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const [isEditCreat, setIsEditCreate] = useState("");
+  const [isEditCreate, setIsEditCreate] = useState("");
   const [selection, setSelection] = useState([]);
   const [selectedBoard, setSelectedBoard] = useState("");
-  const [helpFormData, setHelpFormData] = useState([]);
 
-  const openModal = () => setisboardmodalopen(!isboardmodalopen);
-  const openHelpModal = () => {
-    setIsHelpModalOpen(!isHelpModalOpen);
-  };
-  const handleEditCreate = (actionType) => {
-    setIsEditCreate(actionType);
-    console.log(actionType);
-  };
-  const handleNewBoard = (newBoard) => {
-    setSelection((previous) => [...selection, newBoard]);
-    console.log("selection", selection);
-  };
+  const boardUser = useSelector(getBoards); // preia lista board-urilor din Redux
+
+  useEffect(() => {
+    if (boardUser) {
+      setSelection(boardUser); // Actualizăm selecția cu board-urile din Redux
+    }
+  }, [boardUser]);
+
+  const openModal = () => setIsBoardModalOpen(!isBoardModalOpen);
+  const openHelpModal = () => setIsHelpModalOpen(!isHelpModalOpen);
+
+  const handleEditCreate = (actionType) => setIsEditCreate(actionType);
 
   const handleBoardSelection = (boardName) => {
     setSelectedBoard(boardName);
-    handleSelectedBoard(boardName); 
+    handleSelectedBoard(boardName);
   };
 
   return (
@@ -58,7 +56,7 @@ export const Sidebar = ({
               openModal={openModal}
               handleEditCreate={handleEditCreate}
               selection={selection}
-              handleSelectedBoard={handleBoardSelection} // Pass the board selection handler
+              handleSelectedBoard={handleBoardSelection}
             />
           ) : (
             <p>No boards available. Create a new board.</p>
@@ -70,16 +68,15 @@ export const Sidebar = ({
         <LogingOut />
         <BoardModaL
           openModal={openModal}
-          isboardmodalopen={isboardmodalopen}
-          isEditCreat={isEditCreat}
-          handleNewBoard={handleNewBoard}
+          isboardmodalopen={isBoardModalOpen}
+          isEditCreat={isEditCreate}
           selection={selection}
           selectedBoard={selectedBoard}
           setSelection={setSelection}
         />
-        {isHelpModalOpen ? (
-          <HelpModaL openHelpModal={openHelpModal} setHelpFormData={setHelpFormData} helpFormData={helpFormData} />
-        ) : null}
+        {isHelpModalOpen && (
+          <HelpModaL openHelpModal={openHelpModal} />
+        )}
       </div>
     </div>
   );

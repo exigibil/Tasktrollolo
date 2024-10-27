@@ -61,8 +61,10 @@ export const BoardModaL = ({
     }
   };
 
-  const handleSaveBtn = (event) => {
+  const handleSaveBtn = async (event) => {
     event.preventDefault();
+    
+    // Verificăm dacă se creează o tablă nouă
     if (isEditCreat === "Create board") {
       if (newSelection.icon === "") {
         alert("Please select an icon");
@@ -71,15 +73,44 @@ export const BoardModaL = ({
         alert("Please select an image");
         return;
       }
-      console.log(newSelection);
-      if (selection.some((board) => board.title === newSelection.title)) {
+  
+ 
+      if (selection.some((board) => board.titleBoard === newSelection.title)) {
         alert("The title is already in use");
       } else {
-        handleNewBoard(newSelection);
-        setNewSelection({ title: "", icon: "", image: "" });
-        openModal();
+        try {
+        
+          const response = await fetch('http://localhost:2000/auth/boards', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`, 
+            },
+            body: JSON.stringify({
+              titleBoard: newSelection.title,
+              background: newSelection.image, 
+              icon: newSelection.icon,
+              filter: 'default', 
+            }),
+          });
+  
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+  
+          const result = await response.json();
+          
+       
+          setSelection((prev) => [...prev, result]);
+          setNewSelection({ title: "", icon: "", image: "" });
+          openModal();
+        } catch (error) {
+          console.error("Error creating board:", error);
+          alert("Error creating board: " + error.message);
+        }
       }
     } else if (isEditCreat === "Edit board") {
+
       if (newSelection.icon === "") {
         alert("Please select an icon");
         return;
@@ -87,28 +118,26 @@ export const BoardModaL = ({
         alert("Please select an image");
         return;
       }
-      // Update the existing board
+  
       const index = selection.findIndex(
-        (board) => board.title === selectedBoard
+        (board) => board.titleBoard === selectedBoard
       );
-
+  
       if (index !== -1) {
-        const updatedSelection = [...selection]; // Create a copy of the selection
+        const updatedSelection = [...selection];
         updatedSelection[index] = {
           ...updatedSelection[index],
           ...newSelection,
-        }; // Update the specific board
-
-        // Assuming you have a function to update the selection in the parent component
+        };
         setSelection(updatedSelection);
-
         openModal();
-        setNewSelection({ title: "", icon: "", image: "" }); // Close modal after editing
+        setNewSelection({ title: "", icon: "", image: "" });
       } else {
         console.log("Board not found for editing");
       }
     }
   };
+  
 
   return createPortal(
     <form className={css.boardDetailsModalF} onSubmit={handleSaveBtn}>
@@ -124,7 +153,7 @@ export const BoardModaL = ({
         placeholder="Enter board title"
         onChange={handleBoardTitle}
         value={newSelection.title}
-        required // Ensures the field is filled before submission
+        required 
       />
       <p>Icons</p>
 
@@ -211,6 +240,6 @@ export const BoardModaL = ({
         <p>Save</p>
       </button>
     </form>,
-    document.body // Render the modal to the body
+    document.body 
   );
 };

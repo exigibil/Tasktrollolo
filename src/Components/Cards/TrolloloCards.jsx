@@ -35,7 +35,7 @@ function TrolloloCards({ cardData, onEdit, onDelete }) {
 
   useEffect(() => {
     setIsDeadlineToday(checkIfDeadlineIsToday());
-  }, [cardData.deadline]);
+  }, []);
 
   const handleSaveChanges = (updatedData) => {
     onEdit(updatedData); 

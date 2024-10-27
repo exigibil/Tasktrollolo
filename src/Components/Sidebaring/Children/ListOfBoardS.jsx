@@ -1,4 +1,4 @@
-
+import React, { useState } from "react";
 import css from "../../Sidebaring/Children/Sidebar.module.css";
 import { TfiPencil } from "react-icons/tfi";
 import { IoTrashOutline } from "react-icons/io5";
@@ -10,7 +10,6 @@ import { FaBluesky } from "react-icons/fa6";
 import { AiOutlineAntDesign } from "react-icons/ai";
 import { MdWorkspaces } from "react-icons/md";
 import { FaPhoenixFramework } from "react-icons/fa6";
-import { useState } from "react";
 
 export const ListOfBoardS = ({
   openModal,
@@ -18,67 +17,66 @@ export const ListOfBoardS = ({
   selection,
   handleSelectedBoard,
 }) => {
- 
   const [selectedBoard, setSelectedBoard] = useState("");
-  const setAction = (event) => {
-    handleEditCreate(event.currentTarget.name);
-    openModal();
-    handleSelectedBoard(event.target.closest("li").id);
-  };
+
+
+
+  
 
   const iconSeen = (icon) => {
     switch (icon) {
-      case "icon1":
+      case "icon-01":
         return <LuFlower id="icon1" />;
-      case "icon2":
+      case "icon-02":
         return <CiBasketball id="icon2" />;
-      case "icon3":
+      case "icon-03":
         return <BsBoundingBoxCircles id="icon3" />;
-      case "icon4":
+      case "icon-04":
         return <FaArrowsToDot id="icon4" />;
-      case "icon5":
+      case "icon-05":
         return <FaBluesky id="icon5" />;
-      case "icon6":
+      case "icon-06":
         return <AiOutlineAntDesign id="icon6" />;
-      case "icon7":
+      case "icon-07":
         return <MdWorkspaces id="icon7" />;
-      case "icon8":
+      case "icon-08":
         return <FaPhoenixFramework id="icon8" />;
       default:
         return null;
     }
   };
-
   const handleBTN = (event) => {
     const boardId = event.target.closest('li').id;
-    setSelectedBoard(boardId); // Setează board-ul selectat
+    setSelectedBoard(boardId);
     handleSelectedBoard(boardId);
-  }
+}
 
 
+
+  
   return (
     <ul className={css.boardsListF}>
-      {selection.map((el, index) => (
-        <li 
-          key={index} 
-          id={el.title} 
-          onClick={handleBTN}
-          className={selectedBoard === el.title ? css.activeBoard : ""} // Aplica clasa activă dacă board-ul este selectat
-        >
-          <div className={css.namingBoardF}>
-            <p>{iconSeen(el.icon)}</p>
-            <p>{el.title}</p>
-          </div>
-          <div className={css.modifyBoardF}>
-            <button name="Edit board" onClick={setAction}>
-              <TfiPencil/>
-            </button>
-            <button>
-              <IoTrashOutline />
-            </button>
-          </div>
-        </li>
-      ))}
+        {selection.map((el) => (
+            <li 
+                key={el._id} 
+                id={el.titleBoard} 
+                onClick={handleBTN}
+                className={selectedBoard === el.titleBoard ? css.activeBoard : ""}
+            >
+                <div className={css.namingBoardF}>
+                    <p>{iconSeen(el.icon)}</p>
+                    <p>{el.titleBoard}</p> 
+                </div>
+                <div className={css.modifyBoardF}>
+                    <button name="Edit board" onClick={() => { handleEditCreate("Edit board"); openModal(); }}>
+                        <TfiPencil />
+                    </button>
+                    <button>
+                        <IoTrashOutline />
+                    </button>
+                </div>
+            </li>
+        ))}
     </ul>
-  );
+);
 };

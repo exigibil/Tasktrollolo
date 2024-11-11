@@ -14,7 +14,7 @@ const Dashboard = () => {
   const { user, loading, error } = useUser();
 
   const dispatch = useDispatch();
-  const boardUser = useSelector(getBoards);
+  const boardUser = useSelector(getBoards); 
   const isLoading = useSelector(getIsLoading);
 
   useEffect(() => {
@@ -24,25 +24,23 @@ const Dashboard = () => {
   }, [dispatch, user]);
 
   useEffect(() => {
-    
-    if (Array.isArray(boardUser) && boardUser.length > 0) {
-      setSelectedBoard(boardUser[0].titleBoard);
+    if (Array.isArray(boardUser) && boardUser.length > 0 && !selectedBoard) {
+      setSelectedBoard(boardUser[0].titleBoard); 
     }
-  }, [boardUser]);
+  }, [boardUser, selectedBoard]);
 
   const handleSidebarVisibility = () => {
     setSidebarVisibility(!sidebarVisibility);
   };
 
   const handleSelectedBoard = (boardName) => {
-    setSelectedBoard(boardName);
+    setSelectedBoard(boardName); 
   };
 
   let sidebarID = sidebarVisibility ? "sidebarIsOpen" : "sidebarIsClosed";
 
   
-  let isBoardAvailable =
-    Array.isArray(boardUser) && boardUser.some((board) => board.titleBoard === selectedBoard);
+  const selectedBoardData = boardUser?.find(board => board.titleBoard === selectedBoard);
 
   return (
     <div className="App" id={sidebarID}>
@@ -62,8 +60,8 @@ const Dashboard = () => {
         <div className="App-header">
           {isLoading ? (
             <p>Loading boards...</p>
-          ) : selectedBoard && isBoardAvailable ? (
-            <Boards boardName={selectedBoard} listOfBoards={boardUser} />
+          ) : selectedBoard && selectedBoardData ? (
+            <Boards boardData={selectedBoardData} /> 
           ) : (
             <p id="selectBoard">Please select a board from the sidebar.</p>
           )}

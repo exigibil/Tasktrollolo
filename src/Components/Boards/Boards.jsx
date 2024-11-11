@@ -4,8 +4,8 @@ import styles from "./Boards.module.css";
 import Modal from "../../Components/CardModal/Cardmodal";
 import { useToggle } from "../../Components/Usetoggle/Usetoggle";
 
-const Boards = ({ boardName }) => {
-  const [columns, setColumns] = useState([]);
+const Boards = ({ boardData }) => {
+  const [columns, setColumns] = useState(boardData.columns || []);
   const { isOpen, open, close } = useToggle();
   const [modalMode, setModalMode] = useState("add");
   const [activeColumnIndex, setActiveColumnIndex] = useState(null);
@@ -21,6 +21,7 @@ const Boards = ({ boardName }) => {
     setColumns([...columns, { title: newColumnTitle, cards: [] }]);
     setNewColumnTitle("");
   };
+
   const openAddCardModal = (columnIndex) => {
     setActiveColumnIndex(columnIndex);
     setModalMode("add");
@@ -37,13 +38,11 @@ const Boards = ({ boardName }) => {
     const updatedColumns = [...columns];
     
     if (modalMode === "add") {
-    
       updatedColumns[activeColumnIndex].cards.push({
         ...cardData, 
         priorityc: cardData.priority, 
       });
     } else if (modalMode === "edit") {
-    
       const cardIndex = updatedColumns[activeColumnIndex].cards.findIndex(
         (card) => card.title === selectedCard.title
       );
@@ -52,51 +51,51 @@ const Boards = ({ boardName }) => {
         priorityc: cardData.priority, 
       };
     }
-  
+
     setColumns(updatedColumns);
     close(); 
   };
 
   return (
     <div className={styles.boardContainer}>
-      <div className={styles.boardName}>{boardName}</div>
+      <div className={styles.boardName}>{boardData.titleBoard}</div>
 
       <div className={styles.columnContainer}>
         <div className={styles.columnWrapper}>
           <div className={styles.columnContent}>
-          {columns.map((column, colIndex) => (
-  <div key={colIndex} className={styles.columnContainer}>
-    <div className={styles.column}>
-      <div className={styles.columnTitle}>{column.title}</div>
-      <div className={styles.cardsContainer}>
-        {column.cards.map((card, cardIndex) => (
-          <TrolloloCards
-            key={cardIndex}
-            cardData={card} 
-            onEdit={(updatedCard) => {
-              const updatedColumns = [...columns];
-              updatedColumns[colIndex].cards[cardIndex] = updatedCard;
-              setColumns(updatedColumns);
-            }}
-            onDelete={() => {
-              const updatedColumns = [...columns];
-              updatedColumns[colIndex].cards.splice(cardIndex, 1);
-              setColumns(updatedColumns);
-            }}
-          />
-        ))}
-      </div>
-    </div>
-    <div className={styles.addCardContainer}>
-      <button
-        onClick={() => openAddCardModal(colIndex)}
-        className={styles.addCardButton}
-      >
-        Add Card
-      </button>
-    </div>
-  </div>
-))}
+            {columns.map((column, colIndex) => (
+              <div key={colIndex} className={styles.columnContainer}>
+                <div className={styles.column}>
+                  <div className={styles.columnTitle}>{column.title}</div>
+                  <div className={styles.cardsContainer}>
+                    {column.cards.map((card, cardIndex) => (
+                      <TrolloloCards
+                        key={cardIndex}
+                        cardData={card} 
+                        onEdit={(updatedCard) => {
+                          const updatedColumns = [...columns];
+                          updatedColumns[colIndex].cards[cardIndex] = updatedCard;
+                          setColumns(updatedColumns);
+                        }}
+                        onDelete={() => {
+                          const updatedColumns = [...columns];
+                          updatedColumns[colIndex].cards.splice(cardIndex, 1);
+                          setColumns(updatedColumns);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className={styles.addCardContainer}>
+                  <button
+                    onClick={() => openAddCardModal(colIndex)}
+                    className={styles.addCardButton}
+                  >
+                    Add Card
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className={styles.addBtnContainer}>
@@ -122,14 +121,7 @@ const Boards = ({ boardName }) => {
       {isOpen && (
         <Modal
           onClose={close}
-          cardData={
-            selectedCard || {
-              title: "",
-              description: "",
-              priority: "",
-              deadline: "",
-            }
-          }
+          cardData={selectedCard || { title: "", description: "", priority: "", deadline: "" }}
           setCardData={handleSaveCard}
           setSelectedDate={() => {}}
           isLoading={false}

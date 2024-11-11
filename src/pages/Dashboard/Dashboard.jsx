@@ -17,16 +17,15 @@ const Dashboard = () => {
   const boardUser = useSelector(getBoards);
   const isLoading = useSelector(getIsLoading);
 
-
   useEffect(() => {
-    if (user) { 
+    if (user) {
       dispatch(fetchBoards());
     }
   }, [dispatch, user]);
 
-  
   useEffect(() => {
-    if (boardUser && boardUser.length > 0) {
+    
+    if (Array.isArray(boardUser) && boardUser.length > 0) {
       setSelectedBoard(boardUser[0].titleBoard);
     }
   }, [boardUser]);
@@ -41,9 +40,9 @@ const Dashboard = () => {
 
   let sidebarID = sidebarVisibility ? "sidebarIsOpen" : "sidebarIsClosed";
 
-  let isBoardAvailable = boardUser?.some(
-    (board) => board.titleBoard === selectedBoard
-  );
+  
+  let isBoardAvailable =
+    Array.isArray(boardUser) && boardUser.some((board) => board.titleBoard === selectedBoard);
 
   return (
     <div className="App" id={sidebarID}>

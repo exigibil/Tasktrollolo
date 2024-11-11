@@ -21,13 +21,14 @@ export const Sidebar = ({
   const [selection, setSelection] = useState([]);
   const [selectedBoard, setSelectedBoard] = useState("");
 
-  const boardUser = useSelector(getBoards); // preia lista board-urilor din Redux
+  const boardUser = useSelector(getBoards); 
 
   useEffect(() => {
-    if (boardUser) {
-      setSelection(boardUser); // Actualizăm selecția cu board-urile din Redux
+    if (Array.isArray(boardUser)) {
+      setSelection(boardUser); 
     }
   }, [boardUser]);
+  
 
   const openModal = () => setIsBoardModalOpen(!isBoardModalOpen);
   const openHelpModal = () => setIsHelpModalOpen(!isHelpModalOpen);
